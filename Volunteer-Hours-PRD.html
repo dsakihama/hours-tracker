@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Volunteer Hours Tracker — PRD</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --bg:#F7F8F7; --bg-surface:#FFFFFF; --bg-card:#FFFFFF; --bg-accent:#EBF7F5;
+      --accent:#7EC8BB; --accent-mid:#5AB5A6; --accent-dark:#3A9085;
+      --text:#1C2422; --text-2:#6B7C79; --text-3:#A8B8B5;
+      --border:#E2EBEA; --border-dark:#C8D8D5; --shadow:rgba(28,36,34,0.06);
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.65;}
+    .page{max-width:900px;margin:0 auto;padding:56px 48px 100px;}
+
+    /* Header */
+    .header{display:grid;grid-template-columns:1fr auto;align-items:start;gap:40px;padding-bottom:36px;margin-bottom:52px;border-bottom:2px solid var(--border);}
+    .header-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+    .eyebrow-dash{width:28px;height:3px;background:var(--accent);border-radius:2px;}
+    .eyebrow-text{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent-dark);}
+    .header h1{font-size:38px;font-weight:800;letter-spacing:-0.03em;color:var(--text);line-height:1.1;margin-bottom:14px;}
+    .header h1 span{color:var(--accent-dark);}
+    .header-sub{font-size:15px;color:var(--text-2);max-width:520px;line-height:1.7;}
+    .header-badge-group{display:flex;flex-direction:column;gap:10px;align-items:flex-end;}
+    .header-badge{background:var(--bg-accent);border:1px solid var(--border-dark);border-radius:100px;padding:8px 16px;font-size:12px;font-weight:500;color:var(--accent-dark);white-space:nowrap;}
+
+    /* Meta strip */
+    .meta{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:52px;}
+    .meta-item{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;box-shadow:0 1px 4px var(--shadow);}
+    .meta-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px;}
+    .meta-value{font-size:14px;font-weight:600;color:var(--text);}
+
+    /* Section */
+    .section{margin-bottom:56px;}
+    .section-header{display:flex;align-items:center;gap:14px;margin-bottom:26px;}
+    .section-num-circle{width:36px;height:36px;border-radius:50%;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:var(--accent-dark);flex-shrink:0;}
+    .section-title{font-size:22px;font-weight:700;letter-spacing:-0.02em;color:var(--text);}
+    .section-line{flex:1;height:1px;background:var(--border);}
+
+    p{color:var(--text-2);margin-bottom:14px;}
+    p strong{color:var(--text);font-weight:600;}
+    .lead{font-size:15px;color:var(--text);margin-bottom:20px;}
+
+    /* Cards */
+    .card-grid{display:grid;gap:16px;}
+    .cols-2{grid-template-columns:1fr 1fr;}
+    .cols-3{grid-template-columns:1fr 1fr 1fr;}
+    .card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:22px;box-shadow:0 1px 4px var(--shadow);}
+    .card.accent{background:var(--bg-accent);border-color:var(--border-dark);}
+    .card-eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+    .card-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+    .card-label{font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent-dark);}
+    .card-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;}
+    .card-body{font-size:13px;color:var(--text-2);line-height:1.65;}
+    .card-body strong{color:var(--text);}
+
+    /* Rules / list rows */
+    .rules{display:flex;flex-direction:column;gap:10px;}
+    .rule{display:flex;gap:14px;align-items:flex-start;padding:15px 18px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;box-shadow:0 1px 3px var(--shadow);}
+    .rule-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:var(--accent);background:var(--bg-accent);border:1px solid var(--border-dark);border-radius:4px;padding:2px 7px;flex-shrink:0;margin-top:1px;}
+    .rule-text{font-size:13px;color:var(--text-2);}
+    .rule-text strong{color:var(--text);font-weight:600;}
+
+    /* Stat row */
+    .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+    .stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;box-shadow:0 1px 4px var(--shadow);}
+    .stat-num{font-size:26px;font-weight:800;color:var(--accent-dark);letter-spacing:-0.03em;line-height:1;margin-bottom:6px;}
+    .stat-label{font-size:12px;color:var(--text-2);}
+
+    /* Scope columns */
+    .scope-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .scope-col{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:22px;box-shadow:0 1px 4px var(--shadow);}
+    .scope-col.in{border-top:3px solid var(--accent);}
+    .scope-col.out{border-top:3px solid var(--border-dark);}
+    .scope-head{font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+    .scope-head .tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;padding:2px 8px;border-radius:100px;background:var(--bg-accent);color:var(--accent-dark);border:1px solid var(--border-dark);}
+    .scope-list{list-style:none;display:flex;flex-direction:column;gap:9px;}
+    .scope-list li{font-size:13px;color:var(--text-2);padding-left:20px;position:relative;line-height:1.55;}
+    .scope-list li::before{content:"";position:absolute;left:0;top:7px;width:7px;height:7px;border-radius:50%;background:var(--accent);}
+    .scope-col.out .scope-list li::before{background:var(--text-3);}
+
+    /* Table */
+    table{width:100%;border-collapse:collapse;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 1px 4px var(--shadow);}
+    th{text-align:left;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-dark);background:var(--bg-accent);padding:12px 16px;border-bottom:1px solid var(--border);}
+    td{font-size:13px;color:var(--text-2);padding:13px 16px;border-bottom:1px solid var(--border);vertical-align:top;}
+    tr:last-child td{border-bottom:none;}
+    td strong{color:var(--text);font-weight:600;}
+    .pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.05em;padding:2px 8px;border-radius:100px;}
+    .pill.p0{background:#EBF7F5;color:var(--accent-dark);border:1px solid var(--border-dark);}
+    .pill.p1{background:#F7F8F7;color:var(--text-2);border:1px solid var(--border);}
+
+    /* Flow */
+    .flow{display:grid;grid-template-columns:1fr 20px 1fr 20px 1fr 20px 1fr;align-items:stretch;gap:0;}
+    .flow-step{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:18px;box-shadow:0 1px 4px var(--shadow);}
+    .flow-step.active{border-color:var(--accent);background:var(--bg-accent);}
+    .flow-arrow{display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:18px;}
+    .flow-icon{width:30px;height:30px;border-radius:50%;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;color:var(--accent-dark);margin-bottom:12px;}
+    .flow-step.active .flow-icon{background:var(--accent);color:#fff;border-color:var(--accent);}
+    .flow-step-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;}
+    .flow-step-desc{font-size:12px;color:var(--text-2);line-height:1.5;}
+
+    .callout{background:var(--bg-accent);border:1px solid var(--border-dark);border-left:3px solid var(--accent);border-radius:8px;padding:16px 20px;margin:6px 0 18px;font-size:13px;color:var(--text);}
+    .callout strong{color:var(--accent-dark);}
+
+    .ask{background:var(--text);color:#fff;border-radius:12px;padding:28px 32px;display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center;}
+    .ask-bar{width:4px;align-self:stretch;background:var(--accent);border-radius:2px;min-height:60px;}
+    .ask-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+    .ask-text{font-size:18px;font-weight:600;line-height:1.5;letter-spacing:-0.01em;}
+
+    .footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);display:flex;justify-content:space-between;}
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="header-eyebrow"><div class="eyebrow-dash"></div><span class="eyebrow-text">Product Requirements · Spec · v1.0 · Draft</span></div>
+      <h1>Volunteer Hours <span>Tracker</span></h1>
+      <p class="header-sub">A single-purpose Android app that replaces the spreadsheet-and-memory workflow for logging volunteer hours — fast to enter, effortless to report, honest about where the data lives.</p>
+    </div>
+    <div class="header-badge-group">
+      <div class="header-badge">Android · MVP</div>
+      <div class="header-badge">Personal utility</div>
+      <div class="header-badge">July 2026</div>
+    </div>
+  </div>
+
+  <!-- Meta -->
+  <div class="meta">
+    <div class="meta-item"><div class="meta-label">Product</div><div class="meta-value">Hours Tracker</div></div>
+    <div class="meta-item"><div class="meta-label">Version</div><div class="meta-value">1.0 (Draft)</div></div>
+    <div class="meta-item"><div class="meta-label">Author</div><div class="meta-value">Dean Sakihama</div></div>
+    <div class="meta-item"><div class="meta-label">Updated</div><div class="meta-value">Jul 11, 2026</div></div>
+  </div>
+
+  <!-- 01 Problem Frame -->
+  <div class="section">
+    <div class="section-header"><div class="section-num-circle">01</div><span class="section-title">Problem Frame</span><div class="section-line"></div></div>
+    <p class="lead"><strong>The framework:</strong> volunteer-hour tracking is a <em>capture-then-report</em> problem, not a data problem. Value is lost at the two ends — friction at capture (hours never get logged) and friction at report (totals are painful to assemble). Everything in this product optimizes those two moments.</p>
+    <p>Today the hours live in a Google Sheet, an Excel file, or a person's memory. Each of those fails predictably. Spreadsheets demand a laptop, a correct row, and a running formula the user has to trust. Memory doesn't survive a week. The cost isn't dramatic on any single day — it's the slow erosion of an incomplete record that surfaces exactly when an accurate total is needed (an organization's report, a scholarship, a service requirement).</p>
+    <div class="callout"><strong>Core insight —</strong> the tool that wins here isn't the one with the most features. It's the one that makes logging today's hours a five-second act on the device already in the user's hand, and makes "how many hours this quarter?" a one-tap answer.</div>
+    <p>The smallest version that delivers real value: open the app, confirm project and date, type a number, save. Then ask a period and read a total. If v1 nails those two loops, it has already beaten the spreadsheet.</p>
+  </div>
+
+  <!-- 02 User & Context -->
+  <div class="section">
+    <div class="section-header"><div class="section-num-circle">02</div><span class="section-title">User &amp; Context</span><div class="section-line"></div></div>
+    <div class="card-grid cols-3" style="margin-bottom:16px;">
+      <div class="card accent">
+        <div class="card-eyebrow"><div class="card-dot"></div><span class="card-label">Primary user</span></div>
+        <div class="card-title">The individual volunteer</div>
+        <div class="card-body">One person, one device, no account. Logs hours across a handful of recurring projects and periodically needs a defensible total to report to an organization.</div>
+      </div>
+      <div class="card">
+        <div class="card-eyebrow"><div class="card-dot"></div><span class="card-label">Where</span></div>
+        <div class="card-title">On phone, in the moment</div>
+        <div class="card-body">Entry happens right after a shift — in a car, on a couch, walking out of a building. Often one-handed, often in a hurry. The context is mobile-first, not desk-first.</div>
+      </div>
+      <div class="card">
+        <div class="card-eyebrow"><div class="card-dot"></div><span class="card-label">Why now</span></div>
+        <div class="card-title">The spreadsheet is friction</div>
+        <div class="card-body">The current tools require a laptop or a good memory. A purpose-built, single-tap logger removes both dependencies and makes the record complete.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-eyebrow"><div class="card-dot"></div><span class="card-label">Jobs to be done</span></div>
+      <div class="rules" style="margin-top:6px;">
+        <div class="rule"><span class="rule-num">J1</span><div class="rule-text"><strong>"Log the hours I just did"</strong> — with the least possible friction, so the record actually gets kept.</div></div>
+        <div class="rule"><span class="rule-num">J2</span><div class="rule-text"><strong>"Tell me my total for a period"</strong> — this week, month, quarter, or calendar year, on demand.</div></div>
+        <div class="rule"><span class="rule-num">J3</span><div class="rule-text"><strong>"Show me what I logged and when"</strong> — a trustworthy running record I can scan and correct.</div></div>
+        <div class="rule"><span class="rule-num">J4</span><div class="rule-text"><strong>"Get the numbers out"</strong> — into a CSV or Google Sheet when an organization needs a report.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 Evidence -->
+  <div class="section">
+    <div class="section-header"><div class="section-num-circle">03</div><span class="section-title">Evidence &amp; Assumptions</span><div class="section-line"></div></div>
+    <p>This is a personal-utility build, so the "evidence" is the stated behavior of the current workflow plus a small set of named assumptions. Naming them is the point — hidden assumptions are how good reasoning fails in practice.</p>
+    <div class="card-grid cols-2">
+      <div class="card">
+        <div class="card-eyebrow"><div class="card-dot"></div><span class="card-label">Signals we trust</span></div>
+        <div class="card-body">
+          Hours are currently kept in Sheets / Excel / memory — confirmed.<br><br>
+          Projects are few and recurring, so a preset-plus-custom list will cover almost every entry.<br><br>
+          Reporting need is periodic and period-based (week / month / quarter / year), not continuous analytics.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-eyebrow"><div class="card-dot"></div><span class="card-label">Assumptions to validate</span></div>
+        <div class="card-body">
+          <strong>A1</strong> — One decimal of hours (e.g. 2.5) is precise enough; no minute-level timers needed.<br><br>
+          <strong>A2</strong> — A single device is sufficient; the user won't need multi-device sync in v1.<br><br>
+          <strong>A3</strong> — Google Sheets export is worth a one-time Google authorization (see Open Questions).
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 Proposed Solution -->
+  <div class="section">
+    <div class="section-header"><div class="section-num-circle">04</div><span class="section-title">Proposed Solution</span><div class="section-line"></div></div>
+    <p class="lead">A four-tab Android app built around the capture-then-report loop. Local-first storage; export as the bridge out.</p>
+
+    <div class="stat-row" style="margin-bottom:24px;">
+      <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">Core screens (bottom nav)</div></div>
+      <div class="stat-card"><div class="stat-num">~5s</div><div class="stat-label">Target time to log an entry</div></div>
+      <div class="stat-card"><div class="stat-num">1 tap</div><div class="stat-label">To a period total</div></div>
+      <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">Accounts required</div></div>
+    </div>
+
+    <table style="margin-bottom:20px;">
+      <thead><tr><th style="width:22%;">Capability</th><th>What it does</th><th style="width:14%;">Priority</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Log Hours</strong></td><td>Project selector defaulting to the <strong>last-used project</strong>, a date picker defaulting to <strong>today</strong>, an hours field in <strong>quarter-hour (0.25) increments</strong>, and a <strong>freeform notes area</strong>. Save writes an entry and returns you ready for the next.</td><td><span class="pill p0">P0 · MVP</span></td></tr>
+        <tr><td><strong>History table</strong></td><td>A running, reverse-chronological table of every entry — date, project, hours, note — with a visible running total. Tap a row to edit or delete.</td><td><span class="pill p0">P0 · MVP</span></td></tr>
+        <tr><td><strong>Reports</strong></td><td>A period toggle — <strong>This Week / Month / Quarter / Calendar Year</strong> — showing the period total and a per-project breakdown.</td><td><span class="pill p0">P0 · MVP</span></td></tr>
+        <tr><td><strong>Calendar view</strong></td><td>A month calendar that marks <strong>only days with logged hours</strong>, topped by a <strong>summarized window total</strong> (this month, with week subtotals). Tap a marked day to see and edit that day's entries.</td><td><span class="pill p0">P0 · MVP</span></td></tr>
+        <tr><td><strong>Projects</strong></td><td>A <strong>preset list plus custom add</strong>. Rename and archive; archived projects stay on historical entries but drop off the picker.</td><td><span class="pill p0">P0 · MVP</span></td></tr>
+        <tr><td><strong>CSV export</strong></td><td>Build a CSV of the current report/period and hand it to the <strong>native Android share sheet</strong> — the user routes it to email, Drive, Google Sheets, Files, or anywhere. No account, no network, no Google dependency.</td><td><span class="pill p0">P0 · MVP</span></td></tr>
+        <tr><td><strong>Direct Google Sheets write</strong></td><td>Pushing entries straight into a Google Sheet via OAuth. Not needed — the share sheet already routes CSV to Sheets. Deferred.</td><td><span class="pill p1">Deferred</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="card-eyebrow" style="margin-bottom:12px;"><div class="card-dot"></div><span class="card-label">Primary flow — the capture loop</span></div>
+    <div class="flow">
+      <div class="flow-step active"><div class="flow-icon">01</div><div class="flow-step-title">Open</div><div class="flow-step-desc">App opens to Log Hours with last project and today's date already set.</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-icon">02</div><div class="flow-step-title">Enter</div><div class="flow-step-desc">Confirm or change project/date, type the hours, optional note.</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-icon">03</div><div class="flow-step-title">Save</div><div class="flow-step-desc">One tap. Entry is written locally; brief confirmation.</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="flow-icon">04</div><div class="flow-step-title">Reflected</div><div class="flow-step-desc">Appears instantly in History, Calendar, and Reports.</div></div>
+    </div>
+
+    <div class="callout" style="margin-top:20px;"><strong>Tradeoff named —</strong> defaulting project and date makes the happy path a two-tap save, but it means a distracted user could log to the wrong project on a day they switched. Mitigation: the project and date are always visible on the Log screen before Save, never hidden behind a menu.</div>
+  </div>
+
+  <!-- 05 Scope & Constraints -->
+  <div class="section">
+    <div class="section-header"><div class="section-num-circle">05</div><span class="section-title">Scope &amp; Constraints</span><div class="section-line"></div></div>
+    <div class="scope-grid" style="margin-bottom:20px;">
+      <div class="scope-col in">
+        <div class="scope-head"><span class="tag">IN</span> v1.0 (MVP)</div>
+        <ul class="scope-list">
+          <li>Log hours: project (last-used default), date (today default), quarter-hour increments, freeform notes</li>
+          <li>History table with running total; edit &amp; delete entries</li>
+          <li>Reports: week / month / quarter / calendar year, with per-project breakdown</li>
+          <li>Calendar: day-by-day view + summarized window totals; marks only days with entries</li>
+          <li>Projects: preset list + custom add, rename, archive</li>
+          <li>Local on-device storage as the source of truth (the only store)</li>
+          <li>CSV export handed to the native Android share sheet</li>
+        </ul>
+      </div>
+      <div class="scope-col out">
+        <div class="scope-head"><span class="tag">OUT</span> Not in v1.0</div>
+        <ul class="scope-list">
+          <li>Accounts, login, or multi-user / organization roles</li>
+          <li>Cloud sync across multiple devices</li>
+          <li>Live timers / clock-in-clock-out capture</li>
+          <li>Goals, reminders, streaks, or notifications</li>
+          <li>iOS or web clients (Android-only for v1)</li>
+          <li>In-app analytics dashboards beyond the four period totals</li>
+          <li>Direct Google Sheets / OAuth integration (share sheet covers it)</li>
+          <li>Cloud backup of the local store (deferred, not designed out)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card-grid cols-3">
+      <div class="card"><div class="card-eyebrow"><div class="card-dot"></div><span class="card-label">Technical</span></div><div class="card-body">Native Android. Local persistence (e.g. Room/SQLite). Data model designed so a sync layer <strong>can</strong> be added later without a migration rewrite.</div></div>
+      <div class="card"><div class="card-eyebrow"><div class="card-dot"></div><span class="card-label">Design</span></div><div class="card-body">Follows the Sage personal design system — one accent, white space as structure, hierarchy over decoration. Sage <strong>#7EC8BB</strong> for interactive elements only.</div></div>
+      <div class="card"><div class="card-eyebrow"><div class="card-dot"></div><span class="card-label">Privacy</span></div><div class="card-body">No accounts, no network in the MVP means <strong>no data leaves the device</strong> unless the user explicitly exports. Minimal attack surface by design.</div></div>
+    </div>
+  </div>
+
+  <!-- Non-functional / systems -->
+  <div class="section">
+    <div class="section-header"><div class="section-num-circle">06</div><span class="section-title">Non-Functional &amp; Downstream</span><div class="section-line"></div></div>
+    <p><strong>What this touches, not just what it solves.</strong> Every decision here has a blast radius — mapped below.</p>
+    <div class="rules">
+      <div class="rule"><span class="rule-num">01</span><div class="rule-text"><strong>Data durability is the real risk.</strong> Local-only storage means a lost or wiped phone loses the record — the exact failure we're trying to fix. Mitigation: make export easy and obvious, and treat cloud backup as the top post-MVP candidate.</div></div>
+      <div class="rule"><span class="rule-num">02</span><div class="rule-text"><strong>Privacy is a feature, not an afterthought.</strong> No login and no network keep the data on-device and the attack surface near zero. Any future sync flips this — it introduces auth, a backend, and a real privacy surface, and should be a deliberate, documented decision.</div></div>
+      <div class="rule"><span class="rule-num">03</span><div class="rule-text"><strong>Export stays offline by design.</strong> CSV to the native share sheet keeps the app free of Google OAuth, backend, and network permissions — the user's OS handles where the file goes. Play Store data-safety disclosure stays trivially simple: no data collected, no data shared.</div></div>
+      <div class="rule"><span class="rule-num">04</span><div class="rule-text"><strong>Performance is trivial at this scale.</strong> A single volunteer's entries are small data; local queries are instant. Design for clarity, not throughput.</div></div>
+    </div>
+  </div>
+
+  <!-- 07 Open Questions -->
+  <div class="section">
+    <div class="section-header"><div class="section-num-circle">07</div><span class="section-title">Open Questions</span><div class="section-line"></div></div>
+    <div class="callout"><strong>All open questions resolved as of Jul 11, 2026.</strong> Scope is locked for v1 — decisions recorded below. No blockers remain before Android build.</div>
+    <table>
+      <thead><tr><th style="width:8%;">#</th><th>Question</th><th style="width:26%;">Resolution</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Q1</strong></td><td>Hours precision — decimal, or hours + minutes?</td><td><span class="pill p0">RESOLVED</span> Decimal in <strong>quarter-hour (0.25) increments</strong>.</td></tr>
+        <tr><td><strong>Q2</strong></td><td>Anything on an entry beyond a note?</td><td><span class="pill p0">RESOLVED</span> A <strong>freeform notes area</strong> is in MVP. No tags/location.</td></tr>
+        <tr><td><strong>Q3</strong></td><td>Calendar-based periods only, or more?</td><td><span class="pill p0">RESOLVED</span> Calendar keeps a <strong>day-by-day view plus summarized window totals</strong>; report periods stay calendar-based.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Decision Log -->
+  <div class="section">
+    <div class="section-header"><div class="section-num-circle">08</div><span class="section-title">Decision Log</span><div class="section-line"></div></div>
+    <table>
+      <thead><tr><th style="width:20%;">Decision</th><th>Rationale &amp; tradeoff</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Local-only storage <span class="pill p0">DECIDED</span></strong></td><td>Confirmed sufficient for v1. Maximizes privacy and simplicity, zero accounts, no network. Durability trade accepted, mitigated by easy CSV export; cloud backup deferred, not designed out.</td></tr>
+        <tr><td><strong>Single user, no login</strong></td><td>Matches the actual user and removes an entire auth/backend surface from v1. Multi-user is a different product, out of scope.</td></tr>
+        <tr><td><strong>Preset + custom projects</strong></td><td>Balances zero-setup start against clean, de-duplicated data. Chosen over free-text (messy) and fixed presets (too rigid).</td></tr>
+        <tr><td><strong>CSV via Android share sheet <span class="pill p0">DECIDED</span></strong></td><td>The sole export path for v1. Export builds a CSV and hands it to the native Android share sheet (email, Drive, Sheets, Files — user's choice). No auth, no network, no Google dependency. Direct Google Sheets write deferred.</td></tr>
+        <tr><td><strong>Android-only v1</strong></td><td>Focus. Cross-platform is deferred, not designed out — the data model stays portable.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- The Ask -->
+  <div class="ask">
+    <div class="ask-bar"></div>
+    <div>
+      <div class="ask-label">One ask</div>
+      <div class="ask-text">Scope is fully locked for v1 — storage, export, hours precision, notes, and calendar behavior all decided. Approve this PRD and the five-screen flow is ready to scaffold into Android on your go.</div>
+    </div>
+  </div>
+
+  <div class="footer"><span>Volunteer Hours Tracker · PRD v1.0 Draft</span><span>Sage Design System · Framework → Evidence → Recommendation → Implications</span></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Volunteer Hours Tracker — Screens &amp; Flow</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#F7F8F7; --bg-surface:#FFFFFF; --bg-card:#FFFFFF; --bg-accent:#EBF7F5;
+    --accent:#7EC8BB; --accent-mid:#5AB5A6; --accent-dark:#3A9085;
+    --text:#1C2422; --text-2:#6B7C79; --text-3:#A8B8B5;
+    --border:#E2EBEA; --border-dark:#C8D8D5; --shadow:rgba(28,36,34,0.06);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;}
+  .page{max-width:1180px;margin:0 auto;padding:56px 40px 100px;}
+
+  /* Header */
+  .header{padding-bottom:32px;margin-bottom:48px;border-bottom:2px solid var(--border);}
+  .eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .eyebrow-dash{width:28px;height:3px;background:var(--accent);border-radius:2px;}
+  .eyebrow-text{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent-dark);}
+  h1{font-size:38px;font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:14px;}
+  h1 span{color:var(--accent-dark);}
+  .sub{font-size:15px;color:var(--text-2);max-width:640px;line-height:1.7;}
+
+  /* Section */
+  .section{margin-bottom:64px;}
+  .section-header{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+  .section-num{width:36px;height:36px;border-radius:50%;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-dark);flex-shrink:0;}
+  .section-title{font-size:22px;font-weight:700;letter-spacing:-0.02em;}
+  .section-line{flex:1;height:1px;background:var(--border);}
+  .section-note{color:var(--text-2);max-width:720px;margin-bottom:32px;font-size:14px;}
+  .section-note strong{color:var(--text);}
+
+  /* Flow map */
+  .flowmap{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;}
+  .fnode{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;box-shadow:0 1px 4px var(--shadow);min-width:150px;}
+  .fnode.active{border-color:var(--accent);background:var(--bg-accent);}
+  .fnode-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;color:var(--accent-dark);margin-bottom:6px;text-transform:uppercase;}
+  .fnode-title{font-size:14px;font-weight:700;margin-bottom:4px;}
+  .fnode-desc{font-size:12px;color:var(--text-2);line-height:1.45;}
+  .farrow{display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:20px;padding:0 12px;}
+  .nav-note{margin-top:20px;font-size:12px;color:var(--text-2);font-family:'JetBrains Mono',monospace;letter-spacing:0.03em;}
+
+  /* Phone grid */
+  .phones{display:flex;gap:40px;flex-wrap:wrap;justify-content:center;}
+  .phone-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;}
+  .phone-cap{text-align:center;max-width:300px;}
+  .phone-cap-title{font-size:15px;font-weight:700;margin-bottom:4px;}
+  .phone-cap-title .tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent-dark);background:var(--bg-accent);border:1px solid var(--border-dark);border-radius:100px;padding:2px 8px;margin-left:8px;vertical-align:middle;}
+  .phone-cap-desc{font-size:12px;color:var(--text-2);line-height:1.5;}
+
+  /* Phone frame */
+  .phone{width:300px;height:640px;background:#0E1413;border-radius:38px;padding:9px;box-shadow:0 18px 44px rgba(28,36,34,0.22);flex-shrink:0;}
+  .screen{width:100%;height:100%;background:var(--bg);border-radius:30px;overflow:hidden;position:relative;display:flex;flex-direction:column;}
+
+  /* Status bar */
+  .statusbar{height:30px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:11px;font-weight:600;color:var(--text);flex-shrink:0;}
+  .statusbar .dots{display:flex;gap:4px;align-items:center;}
+  .statusbar .dots span{font-size:10px;color:var(--text-2);}
+
+  /* App bar */
+  .appbar{padding:8px 20px 14px;flex-shrink:0;}
+  .appbar-row{display:flex;align-items:center;justify-content:space-between;}
+  .appbar-title{font-size:20px;font-weight:800;letter-spacing:-0.02em;}
+  .appbar-sub{font-size:11px;color:var(--text-2);margin-top:2px;}
+  .iconbtn{width:32px;height:32px;border-radius:9px;background:var(--bg-card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;}
+  .iconbtn svg{width:16px;height:16px;stroke:var(--accent-dark);fill:none;stroke-width:2;}
+
+  /* Body */
+  .body{flex:1;overflow:hidden;padding:0 20px;}
+  .body.scroll{overflow-y:auto;}
+
+  .field-label{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-3);margin:16px 0 7px;}
+  .field{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px 15px;display:flex;align-items:center;justify-content:between;box-shadow:0 1px 3px var(--shadow);}
+  .field.focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(126,200,187,0.18);}
+  .field-main{flex:1;display:flex;align-items:center;gap:10px;}
+  .field-val{font-size:15px;font-weight:600;color:var(--text);}
+  .field-val.muted{color:var(--text-3);font-weight:500;}
+  .field-icon{width:18px;height:18px;stroke:var(--accent-dark);fill:none;stroke-width:2;flex-shrink:0;}
+  .chev{width:16px;height:16px;stroke:var(--text-3);fill:none;stroke-width:2;}
+  .badge-last{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:var(--accent-dark);background:var(--bg-accent);border:1px solid var(--border-dark);border-radius:100px;padding:2px 7px;}
+
+  /* Hours big input */
+  .hours-box{background:var(--bg-accent);border:1px solid var(--border-dark);border-radius:14px;padding:18px;text-align:center;margin-top:8px;}
+  .hours-num{font-size:44px;font-weight:800;letter-spacing:-0.03em;color:var(--accent-dark);line-height:1;}
+  .hours-unit{font-size:13px;color:var(--text-2);margin-top:4px;}
+  .stepper{display:flex;justify-content:center;gap:10px;margin-top:14px;}
+  .step{width:36px;height:36px;border-radius:10px;background:#fff;border:1px solid var(--border-dark);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--accent-dark);}
+  .quickrow{display:flex;gap:8px;margin-top:12px;}
+  .quick{flex:1;text-align:center;padding:8px 0;border-radius:9px;background:var(--bg-card);border:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text-2);}
+  .quick.on{background:var(--bg-accent);border-color:var(--accent);color:var(--accent-dark);}
+
+  .note-field{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--text-3);box-shadow:0 1px 3px var(--shadow);}
+
+  /* Save button */
+  .save{margin:16px 0 6px;background:var(--accent-dark);border-radius:13px;padding:15px;text-align:center;color:#fff;font-size:15px;font-weight:700;box-shadow:0 4px 12px rgba(58,144,133,0.3);}
+
+  /* Bottom nav */
+  .bottomnav{height:62px;background:var(--bg-surface);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;flex-shrink:0;padding-bottom:4px;}
+  .navitem{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;}
+  .navitem svg{width:20px;height:20px;stroke:var(--text-3);fill:none;stroke-width:2;}
+  .navitem span{font-size:10px;color:var(--text-3);font-weight:500;}
+  .navitem.on svg{stroke:var(--accent-dark);}
+  .navitem.on span{color:var(--accent-dark);font-weight:700;}
+
+  /* History */
+  .total-hero{background:var(--bg-accent);border:1px solid var(--border-dark);border-radius:14px;padding:16px 18px;margin-top:6px;display:flex;align-items:center;justify-content:space-between;}
+  .total-hero .lbl{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-dark);}
+  .total-hero .big{font-size:30px;font-weight:800;letter-spacing:-0.03em;color:var(--accent-dark);line-height:1;margin-top:4px;}
+  .total-hero .side{text-align:right;font-size:11px;color:var(--text-2);}
+  .day-head{font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3);margin:18px 0 8px;}
+  .entry{background:var(--bg-card);border:1px solid var(--border);border-radius:11px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 3px var(--shadow);}
+  .entry-proj{font-size:14px;font-weight:600;color:var(--text);}
+  .entry-note{font-size:11px;color:var(--text-3);margin-top:2px;}
+  .entry-hrs{font-size:16px;font-weight:800;color:var(--accent-dark);letter-spacing:-0.02em;}
+  .dotmark{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:7px;vertical-align:middle;}
+
+  /* Calendar */
+  .cal-head{display:flex;align-items:center;justify-content:space-between;margin:12px 0 14px;}
+  .cal-month{font-size:16px;font-weight:700;}
+  .cal-nav{display:flex;gap:8px;}
+  .cal-nav div{width:30px;height:30px;border-radius:9px;background:var(--bg-card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-2);font-size:14px;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+  .cal-dow{font-size:9px;font-weight:700;letter-spacing:0.04em;color:var(--text-3);text-align:center;padding-bottom:4px;text-transform:uppercase;}
+  .cal-cell{aspect-ratio:1;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;color:var(--text-3);position:relative;}
+  .cal-cell.has{background:var(--bg-card);border:1px solid var(--border);color:var(--text);font-weight:600;box-shadow:0 1px 2px var(--shadow);}
+  .cal-cell.sel{background:var(--accent-dark);color:#fff;font-weight:700;}
+  .cal-cell .cdot{width:5px;height:5px;border-radius:50%;background:var(--accent);margin-top:3px;}
+  .cal-cell.sel .cdot{background:#fff;}
+  .cal-daydetail{margin-top:16px;}
+
+  /* Reports */
+  .segwrap{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:4px;display:flex;gap:2px;margin-top:8px;box-shadow:0 1px 3px var(--shadow);}
+  .seg{flex:1;text-align:center;padding:8px 0;border-radius:9px;font-size:11px;font-weight:600;color:var(--text-2);}
+  .seg.on{background:var(--accent-dark);color:#fff;}
+  .rep-total{text-align:center;padding:22px 0 12px;}
+  .rep-total .num{font-size:52px;font-weight:800;letter-spacing:-0.04em;color:var(--accent-dark);line-height:1;}
+  .rep-total .lbl{font-size:12px;color:var(--text-2);margin-top:6px;}
+  .rep-total .range{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-3);margin-top:6px;letter-spacing:0.05em;}
+  .breakdown-h{font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3);margin:14px 0 10px;}
+  .bd-row{margin-bottom:12px;}
+  .bd-top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;}
+  .bd-top .n{font-weight:600;color:var(--text);}
+  .bd-top .v{font-weight:700;color:var(--accent-dark);}
+  .bd-bar{height:8px;border-radius:5px;background:var(--border);overflow:hidden;}
+  .bd-fill{height:100%;border-radius:5px;background:var(--accent);}
+  .export-btn{margin-top:16px;display:flex;gap:8px;}
+  .export-btn div{flex:1;text-align:center;padding:12px;border-radius:12px;font-size:12px;font-weight:700;}
+  .exp-csv{background:var(--accent-dark);color:#fff;}
+  .exp-sheet{background:var(--bg-card);border:1px solid var(--border-dark);color:var(--accent-dark);}
+
+  /* Projects */
+  .proj-add{display:flex;gap:8px;margin-top:10px;}
+  .proj-add .inp{flex:1;background:var(--bg-card);border:1px solid var(--border);border-radius:11px;padding:12px 14px;font-size:13px;color:var(--text-3);box-shadow:0 1px 3px var(--shadow);}
+  .proj-add .addb{width:46px;border-radius:11px;background:var(--accent-dark);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:400;}
+  .proj-sec{font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3);margin:18px 0 8px;}
+  .proj-item{background:var(--bg-card);border:1px solid var(--border);border-radius:11px;padding:13px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 3px var(--shadow);}
+  .proj-item .nm{font-size:14px;font-weight:600;}
+  .proj-item .meta{font-size:11px;color:var(--text-3);margin-top:2px;}
+  .proj-tag{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.05em;padding:3px 8px;border-radius:100px;background:var(--bg-accent);color:var(--accent-dark);border:1px solid var(--border-dark);}
+  .proj-tag.arch{background:#F7F8F7;color:var(--text-3);border-color:var(--border);}
+
+  .legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:36px;padding:20px 24px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;box-shadow:0 1px 4px var(--shadow);}
+  .legend-item{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--text-2);}
+  .legend-sw{width:26px;height:16px;border-radius:5px;border:1px solid var(--border);}
+
+  .footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);display:flex;justify-content:space-between;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="eyebrow"><div class="eyebrow-dash"></div><span class="eyebrow-text">Screens &amp; Flow · Android · v1.0 · Pre-build</span></div>
+    <h1>Volunteer Hours <span>Tracker</span></h1>
+    <p class="sub">Every screen designed before a line of Android code. Four bottom-nav destinations plus a Projects manager, drawn in the Sage design system — one accent, white space as structure, hierarchy over decoration.</p>
+  </div>
+
+  <!-- Flow -->
+  <div class="section">
+    <div class="section-header"><div class="section-num">01</div><span class="section-title">Navigation &amp; Flow</span><div class="section-line"></div></div>
+    <p class="section-note">The app opens straight into the <strong>capture loop</strong>. Four persistent destinations live in the bottom nav; Projects is reached from the Log screen. The two moments that matter — logging and reporting — are each one tap from anywhere.</p>
+    <div class="flowmap">
+      <div class="fnode active"><div class="fnode-tag">Launch</div><div class="fnode-title">Log Hours</div><div class="fnode-desc">Opens with last project + today pre-set</div></div>
+      <div class="farrow">→</div>
+      <div class="fnode"><div class="fnode-tag">Confirm</div><div class="fnode-title">Enter &amp; Save</div><div class="fnode-desc">Hours + optional note, one-tap save</div></div>
+      <div class="farrow">→</div>
+      <div class="fnode"><div class="fnode-tag">Review</div><div class="fnode-title">History</div><div class="fnode-desc">Running table, edit / delete</div></div>
+      <div class="farrow">→</div>
+      <div class="fnode"><div class="fnode-tag">Report</div><div class="fnode-title">Reports</div><div class="fnode-desc">Period total + export</div></div>
+    </div>
+    <div class="nav-note">BOTTOM NAV → Log · History · Calendar · Reports &nbsp;&nbsp;|&nbsp;&nbsp; Projects opens from Log ▸ project selector ▸ "Manage"</div>
+  </div>
+
+  <!-- Screens -->
+  <div class="section">
+    <div class="section-header"><div class="section-num">02</div><span class="section-title">Screens</span><div class="section-line"></div></div>
+    <div class="phones">
+
+      <!-- 1. LOG HOURS -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>9:41</span><div class="dots"><span>▤ ▤ ▤</span><span>100%</span></div></div>
+          <div class="appbar"><div class="appbar-row">
+            <div><div class="appbar-title">Log Hours</div><div class="appbar-sub">Saturday, July 11</div></div>
+            <div class="iconbtn"><svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="4"/></svg></div>
+          </div></div>
+          <div class="body">
+            <div class="field-label">Project</div>
+            <div class="field focus"><div class="field-main">
+              <svg class="field-icon" viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+              <span class="field-val">Food Bank</span><span class="badge-last">LAST USED</span>
+            </div><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>
+
+            <div class="field-label">Date</div>
+            <div class="field"><div class="field-main">
+              <svg class="field-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>
+              <span class="field-val">Today · Jul 11</span>
+            </div><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>
+
+            <div class="field-label">Hours</div>
+            <div class="hours-box">
+              <div class="hours-num">2.5</div><div class="hours-unit">hours · ¼-hr steps</div>
+              <div class="stepper"><div class="step">−</div><div class="step">+</div></div>
+              <div class="quickrow"><div class="quick">0.25</div><div class="quick">0.5</div><div class="quick">1</div><div class="quick on">2.5</div></div>
+            </div>
+
+            <div class="field-label">Notes <span style="color:var(--text-3);text-transform:none;letter-spacing:0;">· optional</span></div>
+            <div class="note-field" style="min-height:52px;">Sorted donations at the front desk; covered the 2–4pm shift…</div>
+
+            <div class="save">Save entry</div>
+          </div>
+          <div class="bottomnav">
+            <div class="navitem on"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Log</span></div>
+            <div class="navitem"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span>History</span></div>
+            <div class="navitem"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg><span>Calendar</span></div>
+            <div class="navitem"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Reports</span></div>
+          </div>
+        </div></div>
+        <div class="phone-cap"><div class="phone-cap-title">Log Hours<span class="tag">HOME</span></div><div class="phone-cap-desc">Opens here. Project defaults to last used, date to today. Big hours control + quick presets make save a 5-second act.</div></div>
+      </div>
+
+      <!-- 2. HISTORY -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>9:41</span><div class="dots"><span>▤ ▤ ▤</span><span>100%</span></div></div>
+          <div class="appbar"><div class="appbar-row">
+            <div><div class="appbar-title">History</div><div class="appbar-sub">All logged entries</div></div>
+            <div class="iconbtn"><svg viewBox="0 0 24 24"><path d="M4 6h16M6 12h12M9 18h6"/></svg></div>
+          </div></div>
+          <div class="body scroll">
+            <div class="total-hero"><div><div class="lbl">Running total</div><div class="big">148.5</div></div><div class="side">hours logged<br>across 32 entries</div></div>
+
+            <div class="day-head">This week</div>
+            <div class="entry"><div><div class="entry-proj"><span class="dotmark"></span>Food Bank</div><div class="entry-note">Jul 11 · Sorted donations</div></div><div class="entry-hrs">2.5</div></div>
+            <div class="entry"><div><div class="entry-proj"><span class="dotmark"></span>Animal Shelter</div><div class="entry-note">Jul 9 · Dog walking</div></div><div class="entry-hrs">3.0</div></div>
+
+            <div class="day-head">Last week</div>
+            <div class="entry"><div><div class="entry-proj"><span class="dotmark"></span>Food Bank</div><div class="entry-note">Jul 4 · Distribution</div></div><div class="entry-hrs">4.0</div></div>
+            <div class="entry"><div><div class="entry-proj"><span class="dotmark"></span>Beach Cleanup</div><div class="entry-note">Jul 2</div></div><div class="entry-hrs">2.0</div></div>
+            <div class="entry"><div><div class="entry-proj"><span class="dotmark"></span>Library</div><div class="entry-note">Jul 1 · Shelving</div></div><div class="entry-hrs">1.5</div></div>
+          </div>
+          <div class="bottomnav">
+            <div class="navitem"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Log</span></div>
+            <div class="navitem on"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span>History</span></div>
+            <div class="navitem"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg><span>Calendar</span></div>
+            <div class="navitem"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Reports</span></div>
+          </div>
+        </div></div>
+        <div class="phone-cap"><div class="phone-cap-title">History<span class="tag">TABLE</span></div><div class="phone-cap-desc">The running record. Reverse-chronological, grouped by period, with a persistent running total. Tap any row to edit or delete.</div></div>
+      </div>
+
+      <!-- 3. CALENDAR -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>9:41</span><div class="dots"><span>▤ ▤ ▤</span><span>100%</span></div></div>
+          <div class="appbar"><div class="appbar-row">
+            <div><div class="appbar-title">Calendar</div><div class="appbar-sub">Days with logged hours</div></div>
+          </div></div>
+          <div class="body scroll">
+            <div class="cal-head"><div class="cal-month">July 2026</div><div class="cal-nav"><div>‹</div><div>›</div></div></div>
+            <div class="total-hero" style="margin-bottom:14px;"><div><div class="lbl">This month</div><div class="big">13.0</div></div><div class="side">hours · 4 days<br>logged in July</div></div>
+            <div class="cal-grid">
+              <div class="cal-dow">S</div><div class="cal-dow">M</div><div class="cal-dow">T</div><div class="cal-dow">W</div><div class="cal-dow">T</div><div class="cal-dow">F</div><div class="cal-dow">S</div>
+              <div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell">1<div class="cdot"></div></div><div class="cal-cell">2<div class="cdot"></div></div><div class="cal-cell">3</div><div class="cal-cell has">4<div class="cdot"></div></div><div class="cal-cell">5</div>
+              <div class="cal-cell">6</div><div class="cal-cell">7</div><div class="cal-cell">8</div><div class="cal-cell has">9<div class="cdot"></div></div><div class="cal-cell">10</div><div class="cal-cell sel">11<div class="cdot"></div></div><div class="cal-cell">12</div>
+              <div class="cal-cell">13</div><div class="cal-cell">14</div><div class="cal-cell">15</div><div class="cal-cell">16</div><div class="cal-cell">17</div><div class="cal-cell">18</div><div class="cal-cell">19</div>
+              <div class="cal-cell">20</div><div class="cal-cell">21</div><div class="cal-cell">22</div><div class="cal-cell">23</div><div class="cal-cell">24</div><div class="cal-cell">25</div><div class="cal-cell">26</div>
+              <div class="cal-cell">27</div><div class="cal-cell">28</div><div class="cal-cell">29</div><div class="cal-cell">30</div><div class="cal-cell">31</div><div class="cal-cell"></div><div class="cal-cell"></div>
+            </div>
+            <div class="day-head">By week</div>
+            <div class="bd-row"><div class="bd-top"><span class="n">Jun 29 – Jul 5</span><span class="v">6.0</span></div><div class="bd-bar"><div class="bd-fill" style="width:46%"></div></div></div>
+            <div class="bd-row"><div class="bd-top"><span class="n">Jul 6 – Jul 12</span><span class="v">5.5</span></div><div class="bd-bar"><div class="bd-fill" style="width:42%"></div></div></div>
+            <div class="bd-row"><div class="bd-top"><span class="n">Jul 13 – Jul 19</span><span class="v">1.5</span></div><div class="bd-bar"><div class="bd-fill" style="width:12%"></div></div></div>
+
+            <div class="cal-daydetail">
+              <div class="day-head">Saturday, July 11 · 2.5 hrs</div>
+              <div class="entry"><div><div class="entry-proj"><span class="dotmark"></span>Food Bank</div><div class="entry-note">Sorted donations</div></div><div class="entry-hrs">2.5</div></div>
+            </div>
+          </div>
+          <div class="bottomnav">
+            <div class="navitem"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Log</span></div>
+            <div class="navitem"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span>History</span></div>
+            <div class="navitem on"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg><span>Calendar</span></div>
+            <div class="navitem"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Reports</span></div>
+          </div>
+        </div></div>
+        <div class="phone-cap"><div class="phone-cap-title">Calendar<span class="tag">DAY + WINDOWS</span></div><div class="phone-cap-desc">Summarized window totals (month + week subtotals) sit above the grid. Only days with entries get a Sage dot; tap a marked day to see and edit that day's hours.</div></div>
+      </div>
+
+      <!-- 4. REPORTS -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>9:41</span><div class="dots"><span>▤ ▤ ▤</span><span>100%</span></div></div>
+          <div class="appbar"><div class="appbar-row">
+            <div><div class="appbar-title">Reports</div><div class="appbar-sub">Hours by period</div></div>
+          </div></div>
+          <div class="body scroll">
+            <div class="segwrap"><div class="seg">Week</div><div class="seg">Month</div><div class="seg on">Quarter</div><div class="seg">Year</div></div>
+            <div class="rep-total"><div class="num">36.5</div><div class="lbl">hours this quarter</div><div class="range">JUL 1 – SEP 30, 2026</div></div>
+            <div class="breakdown-h">By project</div>
+            <div class="bd-row"><div class="bd-top"><span class="n">Food Bank</span><span class="v">18.0</span></div><div class="bd-bar"><div class="bd-fill" style="width:49%"></div></div></div>
+            <div class="bd-row"><div class="bd-top"><span class="n">Animal Shelter</span><span class="v">9.5</span></div><div class="bd-bar"><div class="bd-fill" style="width:26%"></div></div></div>
+            <div class="bd-row"><div class="bd-top"><span class="n">Beach Cleanup</span><span class="v">6.0</span></div><div class="bd-bar"><div class="bd-fill" style="width:16%"></div></div></div>
+            <div class="bd-row"><div class="bd-top"><span class="n">Library</span><span class="v">3.0</span></div><div class="bd-bar"><div class="bd-fill" style="width:9%"></div></div></div>
+            <div class="export-btn"><div class="exp-csv">⤴&nbsp;&nbsp;Export CSV — Share…</div></div>
+            <div style="text-align:center;font-size:10px;color:var(--text-3);margin-top:8px;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;">OPENS ANDROID SHARE SHEET · EMAIL · DRIVE · SHEETS · FILES</div>
+          </div>
+          <div class="bottomnav">
+            <div class="navitem"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Log</span></div>
+            <div class="navitem"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span>History</span></div>
+            <div class="navitem"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg><span>Calendar</span></div>
+            <div class="navitem on"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Reports</span></div>
+          </div>
+        </div></div>
+        <div class="phone-cap"><div class="phone-cap-title">Reports<span class="tag">PERIOD</span></div><div class="phone-cap-desc">One tap between Week / Month / Quarter / Year. Big total up top, per-project breakdown below, export at the bottom.</div></div>
+      </div>
+
+      <!-- 5. PROJECTS -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>9:41</span><div class="dots"><span>▤ ▤ ▤</span><span>100%</span></div></div>
+          <div class="appbar"><div class="appbar-row">
+            <div><div class="appbar-title">Projects</div><div class="appbar-sub">Preset + your own</div></div>
+            <div class="iconbtn"><svg viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></div>
+          </div></div>
+          <div class="body scroll">
+            <div class="field-label">Add a project</div>
+            <div class="proj-add"><div class="inp">New project name…</div><div class="addb">+</div></div>
+
+            <div class="proj-sec">Active</div>
+            <div class="proj-item"><div><div class="nm">Food Bank</div><div class="meta">42.0 hrs · 12 entries</div></div><span class="proj-tag">IN USE</span></div>
+            <div class="proj-item"><div><div class="nm">Animal Shelter</div><div class="meta">28.5 hrs · 9 entries</div></div><span class="proj-tag">CUSTOM</span></div>
+            <div class="proj-item"><div><div class="nm">Beach Cleanup</div><div class="meta">14.0 hrs · 5 entries</div></div><span class="proj-tag">PRESET</span></div>
+            <div class="proj-item"><div><div class="nm">Library</div><div class="meta">9.0 hrs · 6 entries</div></div><span class="proj-tag">PRESET</span></div>
+
+            <div class="proj-sec">Archived</div>
+            <div class="proj-item"><div><div class="nm" style="color:var(--text-3)">Blood Drive</div><div class="meta">5.0 hrs · kept on old entries</div></div><span class="proj-tag arch">ARCHIVED</span></div>
+          </div>
+          <div class="bottomnav">
+            <div class="navitem"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Log</span></div>
+            <div class="navitem"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span>History</span></div>
+            <div class="navitem"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg><span>Calendar</span></div>
+            <div class="navitem"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Reports</span></div>
+          </div>
+        </div></div>
+        <div class="phone-cap"><div class="phone-cap-title">Projects<span class="tag">MANAGE</span></div><div class="phone-cap-desc">Opened from the Log project selector. Preset + custom add, rename, archive. Archived names stay on history but leave the picker.</div></div>
+      </div>
+
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-sw" style="background:#7EC8BB"></div>Sage — interactive / focus</div>
+      <div class="legend-item"><div class="legend-sw" style="background:#3A9085"></div>Deep Teal — primary action / emphasis</div>
+      <div class="legend-item"><div class="legend-sw" style="background:#EBF7F5"></div>Mist — accent fills</div>
+      <div class="legend-item"><div class="legend-sw" style="background:#FFFFFF"></div>White — cards / surfaces</div>
+      <div class="legend-item"><div class="legend-sw" style="background:#1C2422"></div>Ink — primary text</div>
+    </div>
+  </div>
+
+  <div class="footer"><span>Volunteer Hours Tracker · Screens v1.0</span><span>Sage Design System · Android · Pre-build</span></div>
+
+</div>
+</body>
+</html>
